@@ -23,6 +23,9 @@ struct ContentView: View {
     
     @State var showAlert = false
     
+    //In Combine terminology, you're subscribing to the TimeCounter publisher.
+    @ObservedObject var timer = TimeCounter()
+    
     func computeScore() -> Int {
         let rDiff = rGuess - rTarget
         let gDiff = gGuess - gTarget
@@ -39,12 +42,16 @@ struct ContentView: View {
                     Text("match this Color")
                 }
                 VStack {
-                    Color(red: rGuess, green: gGuess, blue: bGuess)
+                    ZStack {
+                        Color(red: rGuess, green: gGuess, blue: bGuess)
+                        Text(String(timer.counter))
+                    }
                     Text("R: \(Int(rGuess * 255.0))  G: \(Int(gGuess * 255.0))  B: \(Int(bGuess * 255.0))")
                 }
             }
             Button(action: {
                 self.showAlert = true
+                self.timer.killTimer()
             }) {
                 Text("Hit me")
                     .foregroundColor(.warmBlue)
@@ -81,11 +88,3 @@ struct ColorSlider: View {
     }
 }
 
-class TimerCounter: ObservableObject {
-    @Published var timer : Timer?
-    var counter = 0
-    
-    @objc func updateCounter(){
-        counter += 1
-    }
-}
